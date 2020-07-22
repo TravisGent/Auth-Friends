@@ -3,12 +3,28 @@ import { axiosWithAuth } from "../utils/axiosWithAuth";
 
 class FriendsData extends React.Component {
   state = {
-    friendsData: []
+    friendsData: [],
+    newFriend: {
+        id: 7,
+        name: "",
+        age: "",
+        email: ""
+      }
   };
 
   componentDidMount() {
     this.getData();
   }
+
+  handleChanges = event => {
+    this.setState({
+      ...this.state,
+      newFriend: {
+          ...this.state.newFriend,
+          [event.target.name]: event.target.value
+      }
+    });
+  };
 
   getData = () => {
     axiosWithAuth()
@@ -21,6 +37,15 @@ class FriendsData extends React.Component {
       .catch(error => console.log(error))
   };
 
+  addFriend = event => {
+    event.preventDefault();
+
+    axiosWithAuth()
+      .post("/api/friends", this.state.newFriend)
+      .then(response => console.log(response))
+      .catch(error => console.log(error))
+  }
+
   render() {
     return (
       <div>
@@ -31,6 +56,32 @@ class FriendsData extends React.Component {
             <h3>{data.email}</h3>
           </div>
         ))}
+
+        <form onSubmit={this.addFriend}>
+          <h1>Add New Friend</h1>
+          <p>Name</p>
+          <input
+            type="text"
+            name="name"
+            value={this.state.newFriend.name}
+            onChange={this.handleChanges} 
+          />
+          <p>Age</p>
+          <input
+            type="text"
+            name="age"
+            value={this.state.newFriend.age}
+            onChange={this.handleChanges} 
+          />
+          <p>Email</p>
+          <input
+            type="text"
+            name="email"
+            value={this.state.newFriend.email}
+            onChange={this.handleChanges} 
+          />
+          <br /><button>Add Friend</button>
+        </form>
       </div>
     )
   }
